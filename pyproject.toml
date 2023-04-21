@@ -1,0 +1,53 @@
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = [
+    "black>=23.3.0",
+    "elm327-emulator>=3.0.0",
+    "httpx>=0.24.0",
+    "mypy>=1.2.0",
+    "pytest>=7.3.1",
+]
+
+[project]
+name = "elm327-exporter"
+version = "0.1.0"
+description = "A prometheus exporter for the ELM327"
+authors = [
+    {name = "Hayley Hughes", email = "hayley@foxes.systems"},
+]
+dependencies = [
+    "starlette>=0.26.1",
+    "obd @ git+https://github.com/brendan-w/python-OBD@master",
+    "prometheus-client>=0.16.0",
+    "pint>=0.20.1",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+serve = [
+    "uvicorn>=0.21.1",
+    "setuptools>=67.7.0",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.scripts]
+serve = "uvicorn elm_exporter.app:app"
+format = "black src"
+test = "pytest"
+mypy = "mypy src"
+all = {composite = ['format', 'mypy', 'test', 'serve']}
+
+[tool.pdm.resolution.overrides]
+pint = "0.20.*"
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+
+[[tool.mypy.overrides]]
+module = ["obd", "elm"]
+ignore_missing_imports = true
