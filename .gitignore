@@ -1,3 +1,6 @@
+# vim
+*.swp
+
 # ELM emulator
 elm.log*
 
