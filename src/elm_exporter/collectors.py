@@ -36,5 +36,5 @@ class ObdCollector(Collector):
                     self._add_units(command.desc, v),
                     value=v.magnitude,
                 )
-            else:
-                self.commands.remove(command)
+
+        self.car.reset_retries()
