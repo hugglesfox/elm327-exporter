@@ -1,15 +1,4 @@
-import obd
-
-from .car import Car
-from .collectors import ObdCollector
-
-from prometheus_client import Info
-from prometheus_client.core import REGISTRY
-
-
-car = Car()
-
-commands = [
+COMMANDS = [
     # bank A
     "ENGINE_LOAD",
     "COOLANT_TEMP",
@@ -97,14 +86,3 @@ commands = [
     # elm
     "ELM_VOLTAGE",
 ]
-
-REGISTRY.register(ObdCollector(car, [obd.commands[cmd] for cmd in commands]))
-
-info = {}
-vin = car.query(obd.commands.VIN).value
-
-if vin is not None:
-    info["vin"] = vin.decode()
-
-CAR_INFO = Info("car", "Static Car Information")
-CAR_INFO.info(info)
