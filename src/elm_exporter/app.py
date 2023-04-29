@@ -17,10 +17,12 @@ async def lifespan(app: Starlette):
     car = Car()
 
     commands = [obd.commands[cmd] for cmd in COMMANDS]
-    REGISTRY.register(ObdCollector(car, commands))
+    collector = ObdCollector(car, commands)
+    REGISTRY.register(collector)
 
     yield
 
+    REGISTRY.unregister(collector)
     car.close()
 
 
