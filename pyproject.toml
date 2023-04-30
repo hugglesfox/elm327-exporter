@@ -37,8 +37,8 @@ build-backend = "pdm.backend"
 
 [tool.pdm.scripts]
 emu = "elm"
-format = "black src"
-mypy = "mypy src"
+format = "black src tests"
+mypy = "mypy src tests"
 serve = "uvicorn elm_exporter.app:app"
 test = "pytest"
 all = {composite = ['format', 'mypy', 'test', 'serve']}
