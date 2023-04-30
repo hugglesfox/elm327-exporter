@@ -36,10 +36,11 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [tool.pdm.scripts]
-serve = "uvicorn elm_exporter.app:app"
+emu = "elm"
 format = "black src"
-test = "pytest"
 mypy = "mypy src"
+serve = "uvicorn elm_exporter.app:app"
+test = "pytest"
 all = {composite = ['format', 'mypy', 'test', 'serve']}
 
 [tool.pdm.resolution.overrides]
