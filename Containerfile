@@ -20,5 +20,4 @@ FROM python:3.10
 ENV PYTHONPATH=/project/pkgs
 COPY --from=builder /project/__pypackages__/3.10/lib /project/pkgs
 
-# set command/entrypoint, adapt to fit your needs
-CMD ["python", "-m", "uvicorn", "elm_exporter.app:app", "--host", "0.0.0.0"]
+ENTRYPOINT ["python", "-m", "uvicorn", "elm_exporter.app:app", "--host", "0.0.0.0"]
