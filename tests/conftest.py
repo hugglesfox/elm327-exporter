@@ -6,10 +6,11 @@ from starlette.testclient import TestClient
 from elm_exporter import settings
 from elm_exporter.app import app
 
+settings.LOG_LEVEL = "DEBUG"
 
-@pytest.fixture(scope='session', autouse=True)
+
+@pytest.fixture(autouse=True)
 def emulator():
-    print('hi')
     with elm.Elm() as emu:
         settings.ELM_PORT = emu.get_pty()
         yield emu
