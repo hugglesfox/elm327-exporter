@@ -3,7 +3,7 @@ import obd
 
 from . import COMMANDS, settings
 from .car import Car
-from .collectors import ObdCollector
+from .collectors import ObdCollector, InfoCollector
 
 from prometheus_client import make_asgi_app
 from prometheus_client.core import REGISTRY
@@ -17,12 +17,18 @@ async def lifespan(app: Starlette):
     car = Car()
 
     commands = [obd.commands[cmd] for cmd in COMMANDS]
-    collector = ObdCollector(car, commands)
-    REGISTRY.register(collector)
+    obd_collector = ObdCollector(car, commands)
+    REGISTRY.register(obd_collector)
+
+    info_collector = InfoCollector(
+        car, [obd.commands.ELM_VERSION, obd.commands.VIN, obd.commands.FUEL_TYPE]
+    )
+    REGISTRY.register(info_collector)
 
     yield
 
-    REGISTRY.unregister(collector)
+    REGISTRY.unregister(obd_collector)
+    REGISTRY.unregister(info_collector)
     car.close()
 
 

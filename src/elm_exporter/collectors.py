@@ -1,10 +1,34 @@
 import obd
 
 from .car import Car
-from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.core import GaugeMetricFamily, InfoMetricFamily
 from prometheus_client.registry import Collector
 
 from typing import Iterable
+
+
+class InfoCollector(Collector):
+    """A collector for static text such as version information or VIN number"""
+
+    def __init__(self, car: Car, commands: list[obd.OBDCommand]):
+        self.car = car
+        self.commands = commands
+
+    def collect(self) -> Iterable[GaugeMetricFamily]:
+        d = {}
+
+        for command in self.commands:
+            resp = self.car.query(command)
+            v = resp.value
+
+            if v is not None:
+                if type(v) is bytearray:
+                    d[command.name.lower()] = v.decode("ascii")
+                else:
+                    d[command.name.lower()] = str(v)
+
+        yield InfoMetricFamily("car", "Static car information", value=d)
+        self.car.reset_retries()
 
 
 class ObdCollector(Collector):
