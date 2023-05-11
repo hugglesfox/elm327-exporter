@@ -10,7 +10,7 @@ from typing import Iterable
 class InfoCollector(Collector):
     """A collector for static text such as version information or VIN number"""
 
-    def __init__(self, car: Car, commands: list[obd.OBDCommand]):
+    def __init__(self, car: Car, commands: list[str]):
         self.car = car
         self.commands = commands
 
@@ -32,7 +32,7 @@ class InfoCollector(Collector):
 
 
 class ObdCollector(Collector):
-    """A collector for OBD commands.
+    """A collector for mode 1 and 2 OBD commands.
 
     Generates prometheus Guages for each of the given OBD commands.
     """
@@ -51,14 +51,25 @@ class ObdCollector(Collector):
 
     def collect(self) -> Iterable[GaugeMetricFamily]:
         for command in self.commands:
-            resp = self.car.query(command)
-            v = resp.value
+            mode1_cmd = obd.commands[command]
 
-            if v is not None:
-                yield GaugeMetricFamily(
-                    command.name.lower(),
-                    self._add_units(command.desc, v),
-                    value=v.magnitude,
+            if (mode1 := self.car.query(mode1_cmd).value) is not None:
+                g = GaugeMetricFamily(
+                    command.lower(),
+                    self._add_units(mode1_cmd.desc, mode1),
+                    labels=["mode"],
                 )
+
+                g.add_metric(["1"], mode1.magnitude)
+
+                mode2_cmd_name = "DTC_" + command
+
+                if mode2_cmd_name in obd.commands:
+                    mode2_cmd = obd.commands["DTC_" + command]
+
+                    if (mode2 := self.car.query(mode2_cmd).value) is not None:
+                        g.add_metric(["2"], mode2.magnitude)
+
+                yield g
 
         self.car.reset_retries()

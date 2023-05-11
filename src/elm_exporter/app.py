@@ -16,8 +16,7 @@ from starlette.routing import Mount
 async def lifespan(app: Starlette):
     car = Car()
 
-    commands = [obd.commands[cmd] for cmd in COMMANDS]
-    obd_collector = ObdCollector(car, commands)
+    obd_collector = ObdCollector(car, COMMANDS)
     REGISTRY.register(obd_collector)
 
     info_collector = InfoCollector(
