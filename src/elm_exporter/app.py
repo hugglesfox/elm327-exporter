@@ -28,6 +28,10 @@ async def lifespan(app: Starlette):
 
     REGISTRY.unregister(obd_collector)
     REGISTRY.unregister(info_collector)
+
+    if settings.ELM_AUTO_LP:
+        car.dev.low_power()
+
     car.close()
 
 

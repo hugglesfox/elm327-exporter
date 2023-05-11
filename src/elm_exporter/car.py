@@ -15,19 +15,19 @@ class Car:
     """
 
     def __init__(self):
-        self._car = obd.OBD(settings.ELM_PORT)
+        self.dev = obd.OBD(settings.ELM_PORT)
         self._retries = 0
 
     def query(self, command: obd.OBDCommand) -> obd.OBDResponse:
         """See obd.OBD.query() documentation"""
-        connected = self._car.status() != obd.utils.OBDStatus.CAR_CONNECTED
+        connected = self.dev.status() != obd.utils.OBDStatus.CAR_CONNECTED
         while connected and self._retries < settings.ELM_MAX_RETRIES:
-            self._car.close()
-            self._car = obd.OBD(settings.ELM_PORT)
+            self.dev.close()
+            self.dev = obd.OBD(settings.ELM_PORT)
             time.sleep(self._retries)
             self._retries += 1
 
-        return self._car.query(command)
+        return self.dev.query(command)
 
     def reset_retries(self):
         """Reset the retry count.
@@ -41,4 +41,4 @@ class Car:
 
     def close(self):
         """See obd.OBD.close() documentation"""
-        self._car.close()
+        self.dev.close()
