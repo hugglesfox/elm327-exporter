@@ -10,7 +10,7 @@ from typing import Iterable
 class InfoCollector(Collector):
     """A collector for static text such as version information or VIN number"""
 
-    def __init__(self, car: Car, commands: list[str]):
+    def __init__(self, car: Car, commands: list[obd.command.ObdCommand]):
         self.car = car
         self.commands = commands
 
