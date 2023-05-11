@@ -14,7 +14,7 @@ class InfoCollector(Collector):
         self.car = car
         self.commands = commands
 
-    def collect(self) -> Iterable[GaugeMetricFamily]:
+    def collect(self) -> Iterable[InfoMetricFamily]:
         d = {}
 
         for command in self.commands:
@@ -73,3 +73,19 @@ class ObdCollector(Collector):
                 yield g
 
         self.car.reset_retries()
+
+
+class DtcCollector(Collector):
+    """A collector for Diagnostic Trouble Codes (DTCs)"""
+
+    def __init__(self, car: Car):
+        self.car = car
+
+    def collect(self) -> Iterable[InfoMetricFamily]:
+        d = {}
+        dtc = self.car.query(obd.commands.GET_DTC).values
+
+        for code, description in dtc:
+            d[code] = description
+
+        yield InfoMetricFamily("dtc", "Diagnostic Trouble Codes Information", value=d)
