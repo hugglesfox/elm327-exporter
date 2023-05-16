@@ -10,7 +10,7 @@ from typing import Iterable
 class InfoCollector(Collector):
     """A collector for static text such as version information or VIN number"""
 
-    def __init__(self, car: Car, commands: list[obd.command.ObdCommand]):
+    def __init__(self, car: Car, commands: list[obd.OBDCommand]):
         self.car = car
         self.commands = commands
 
@@ -83,9 +83,9 @@ class DtcCollector(Collector):
 
     def collect(self) -> Iterable[InfoMetricFamily]:
         d = {}
-        dtc = self.car.query(obd.commands.GET_DTC).values
+        dtc = self.car.query(obd.commands.GET_DTC).value
 
         for code, description in dtc:
             d[code] = description
 
-        yield InfoMetricFamily("dtc", "Diagnostic Trouble Codes Information", value=d)
+        yield InfoMetricFamily("dtc", "Diagnostic trouble codes information", value=d)
