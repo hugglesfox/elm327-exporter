@@ -85,7 +85,8 @@ class DtcCollector(Collector):
         d = {}
         dtc = self.car.query(obd.commands.GET_DTC).value
 
-        for code, description in dtc:
-            d[code] = description
+        if dtc is not None:
+            for code, description in dtc:
+                d[code] = description
 
-        yield InfoMetricFamily("dtc", "Diagnostic trouble codes information", value=d)
+            yield InfoMetricFamily("dtc", "Diagnostic trouble codes information", value=d)
