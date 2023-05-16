@@ -22,10 +22,7 @@ class InfoCollector(Collector):
             v = resp.value
 
             if v is not None:
-                if type(v) is bytearray:
-                    d[command.name.lower()] = v.decode("ascii")
-                else:
-                    d[command.name.lower()] = str(v)
+                d[command.name.lower()] = str(v)
 
         yield InfoMetricFamily("car", "Static car information", value=d)
         self.car.reset_retries()
